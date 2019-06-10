@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>堆场图</title>
+  <style>
+    ul,li {
+      margin: 0;
+      padding: 0
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0
+    }
+    body {
+      background-color: #eee;
+    }
+    .container {
+      position:relative;
+      box-sizing: border-box;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+    .index {  
+        position: absolute;
+        
+        overflow: visible !important;
+        pointer-events: none;
+        width: auto;
+        z-index: 11;
+        font-size: 0
+    }
+    .y-index {
+      top: 33px;
+      left: 8px;
+      bottom: 0;
+    }
+    .x-index {
+      top: 4px;
+      left: 8px;
+      right: 0
+    }
+    .index ul {
+        border-radius: 30px;
+        background-color: rgba(0,0,0,.3);
+        color: #fff;
+        font-size: 10px;
+        text-align: center;
+        padding: 0 3px 6px;
+        min-width: 16px;
+        flex-direction: column
+    }
+
+    .x-index ul {
+      flex-direction: row;
+      min-width: auto;
+      padding:3px 6px 3px 0;
+    }
+
+    .index li,.index ul {
+        display: flex
+    }
+
+    .index li {
+        flex: 1 1 auto;
+        align-items: center;
+        justify-content: center
+    }
+    .x-index li {
+      display: inline-block;
+      flex: none
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="y-index index"></div>
+  <div class="x-index index"></div>
+  <canvas class="canvas-map">
+    您的浏览器不支持canvas,请使用chrome等现代浏览器！
+  </canvas>
+</div>
+<script src="vendors/jquery/dist/jquery.min.js"></script>
+<script src="vendors/lodash/dist/lodash.min.js"></script>
+<script src="vendors/hammerjs/hammer.min.js"></script>
+<script src="lib/yardMap.js?v=1"></script>
+<script type="text/template" id="index-items">
+<ul style="<%if(data.rowHeight){%>line-height:<%=data.rowHeight*scale%>px<%}%>">
+<%_.each(data.rowHeight ? data.rows : data.columns, item => {%>
+<li <%if(data.columnWidth){%>style="width:<%=data.columnWidth*scale%>px"<%}%>><%if(item.index) {%><%=item.index%><%}else{%>&nbsp;<%}%></li>
+<%})%>
+</ul>
+</script>
+<script>
+  const data = {
+    "maxColumn": "14",
+    "maxRow": "5",
+    "minColumn": "1",
+    "minRow": "1",
+    "site":[{
+        "column": "1",
+        "name": "1列1行",
+        "row": "1",
+        "rowName": "1",
+        "columnName": "1",
+        "siteId": "1",
+        "status": "0"
+    }, {
+        "column": "2",
+        "name": "1列2行",
+        "row": "1",
+        "rowName": "1",
+        "columnName":"2",
+        "siteId": "2",
+        "status": "1"
+    }, {
+        "column": "3",
+        "name": "1列3行",
+        "row": "1",
+        "rowName": "1",
+        "siteId": "3",
+        "status": "1"
+    }, {
+        "column": "4",
+        "name": "1列4行",
+        "row": "1",
+        "rowName": "1",
+        "siteId": "4",
+        "status": "1"
+    }, {
+        "column": "5",
+        "name": "1列5行",
+        "row": "1",
+        "rowName": "1",
+        "siteId": "5",
+        "status": "1"
+    }, {
+        "column": "6",
+        "name": "1列6行",
+        "row": "1",
+        "rowName": "1",
+        "siteId": "6",
+        "status": "1"
+    }, {
+        "column": "7",
+        "name": "1列7行",
+        "row": "1",
+        "rowName": "1",
+        "siteId": "7",
+        "status": "1"
+    }, {
+        "column": "8",
+        "name": "1列8行",
+        "row": "1",
+        "rowName": "1",
+        "siteId": "8",
+        "status": "1"
+    }, {
+        "column": "9",
+        "name": "1列9行",
+        "row": "1",
+        "rowName": "1",
+        "siteId": "9",
+        "status": "1"
+    }, {
+        "column": "10",
+        "name": "1列10行",
+        "row": "1",
+        "rowName": "1",
+        "siteId": "10",
+        "status": "1"
+    }, {
+        "column": "11",
+        "name": "1列11行",
+        "row": "1",
+        "rowName": "1",
+        "siteId": "11",
+        "status": "1"
+    }, {
+        "column": "12",
+        "name": "1列12行",
+        "row": "1",
+        "rowName": "1",
+        "siteId": "12",
+        "status": "0"
+    }, {
+        "column": "13",
+        "name": "1列13行",
+        "row": "1",
+        "rowName": "1",
+        "siteId": "13",
+        "status": "0"
+    }, {
+        "column": "14",
+        "name": "1列14行",
+        "row": "1",
+        "rowName": "1",
+        "siteId": "14",
+        "status": "1"
+    }, {
+        "column": "1",
+        "name": "2列1行",
+        "row": "2",
+        "rowName": "2",
+        "siteId": "15",
+        "status": "1"
+    }, {
+        "column": "2",
+        "name": "2列2行",
+        "row": "2",
+        "rowName": "2",
+        "siteId": "16",
+        "status": "1"
+    }, {
+        "column": "3",
+        "name": "2列3行",
+        "row": "2",
+        "rowName": "2",
+        "siteId": "17",
+        "status": "1"
+    }, {
+        "column": "4",
+        "name": "2列4行",
+        "row": "2",
+        "rowName": "2",
+        "siteId": "18",
+        "status": "1"
+    }, {
+        "column": "5",
+        "name": "2列5行",
+        "row": "2",
+        "rowName": "2",
+        "siteId": "19",
+        "status": "0"
+    }, {
+        "column": "6",
+        "name": "2列6行",
+        "row": "2",
+        "rowName": "2",
+        "siteId": "20",
+        "status": "1"
+    }, {
+        "column": "7",
+        "name": "2列7行",
+        "row": "2",
+        "rowName": "2",
+        "siteId": "21",
+        "status": "1"
+    }, {
+        "column": "8",
+        "name": "2列8行",
+        "row": "2",
+        "rowName": "2",
+        "siteId": "22",
+        "status": "1"
+    }, {
+        "column": "9",
+        "name": "2列9行",
+        "row": "2",
+        "rowName": "2",
+        "siteId": "23",
+        "status": "1"
+    }, {
+        "column": "10",
+        "name": "2列10行",
+        "row": "2",
+        "rowName": "2",
+        "siteId": "24",
+        "status": "1"
+    }, {
+        "column": "11",
+        "name": "2列11行",
+        "row": "2",
+        "rowName": "2",
+        "siteId": "25",
+        "status": "1"
+    }, {
+        "column": "12",
+        "name": "2列12行",
+        "row": "2",
+        "rowName": "2",
+        "siteId": "26",
+        "status": "1"
+    }, {
+        "column": "13",
+        "name": "2列13行",
+        "row": "2",
+        "rowName": "2",
+        "siteId": "27",
+        "status": "1"
+    }, {
+        "column": "14",
+        "name": "2列14行",
+        "row": "2",
+        "rowName": "2",
+        "siteId": "28",
+        "status": "1"
+    }, {
+        "column": "1",
+        "name": "3列1行",
+        "row": "3",
+        "rowName": "3",
+        "siteId": "29",
+        "status": "1"
+    }, {
+        "column": "2",
+        "name": "3列2行",
+        "row": "3",
+        "rowName": "3",
+        "siteId": "30",
+        "status": "1"
+    }, {
+        "column": "3",
+        "name": "3列3行",
+        "row": "3",
+        "rowName": "3",
+        "siteId": "31",
+        "status": "1"
+    }, {
+        "column": "4",
+        "name": "3列4行",
+        "row": "3",
+        "rowName": "3",
+        "siteId": "32",
+        "status": "1"
+    }, {
+        "column": "5",
+        "name": "3列5行",
+        "row": "3",
+        "rowName": "3",
+        "siteId": "33",
+        "status": "1"
+    }, {
+        "column": "6",
+        "name": "3列6行",
+        "row": "3",
+        "rowName": "3",
+        "siteId": "34",
+        "status": "1"
+    }, {
+        "column": "7",
+        "name": "3列7行",
+        "row": "3",
+        "rowName": "3",
+        "siteId": "35",
+        "status": "1"
+    }, {
+        "column": "8",
+        "name": "3列8行",
+        "row": "3",
+        "rowName": "3",
+        "siteId": "36",
+        "status": "1"
+    }, {
+        "column": "9",
+        "name": "3列9行",
+        "row": "3",
+        "rowName": "3",
+        "siteId": "37",
+        "status": "1"
+    }, {
+        "column": "10",
+        "name": "3列10行",
+        "row": "3",
+        "rowName": "3",
+        "siteId": "38",
+        "status": "1"
+    }, {
+        "column": "11",
+        "name": "3列11行",
+        "row": "3",
+        "rowName": "3",
+        "siteId": "39",
+        "status": "1"
+    }, {
+        "column": "12",
+        "name": "3列12行",
+        "row": "3",
+        "rowName": "3",
+        "siteId": "40",
+        "status": "1"
+    }, {
+        "column": "13",
+        "name": "3列13行",
+        "row": "3",
+        "rowName": "3",
+        "siteId": "45",
+        "status": "1"
+    }, {
+        "column": "14",
+        "name": "3列14行",
+        "row": "3",
+        "rowName": "3",
+        "siteId": "46",
+        "status": "1"
+    }, {
+        "column": "1",
+        "name": "4列1行",
+        "row": "4",
+        "rowName": "4",
+        "siteId": "47",
+        "status": "1"
+    }, {
+        "column": "2",
+        "name": "4列2行",
+        "row": "4",
+        "rowName": "4",
+        "siteId": "48",
+        "status": "1"
+    }, {
+        "column": "3",
+        "name": "4列3行",
+        "row": "4",
+        "rowName": "4",
+        "siteId": "49",
+        "status": "1"
+    }, {
+        "column": "4",
+        "name": "4列4行",
+        "row": "4",
+        "rowName": "4",
+        "siteId": "50",
+        "status": "1"
+    }, {
+        "column": "5",
+        "name": "4列5行",
+        "row": "4",
+        "rowName": "4",
+        "siteId": "51",
+        "status": "1"
+    }, {
+        "column": "6",
+        "name": "4列6行",
+        "row": "4",
+        "rowName": "4",
+        "siteId": "52",
+        "status": "1"
+    }, {
+        "column": "7",
+        "name": "4列7行",
+        "row": "4",
+        "rowName": "4",
+        "siteId": "53",
+        "status": "1"
+    }, {
+        "column": "8",
+        "name": "4列8行",
+        "row": "4",
+        "rowName": "4",
+        "siteId": "54",
+        "status": "1"
+    }, {
+        "column": "9",
+        "name": "4列9行",
+        "row": "4",
+        "rowName": "4",
+        "siteId": "55",
+        "status": "1"
+    }, {
+        "column": "11",
+        "name": "4列10行",
+        "row": "4",
+        "rowName": "4",
+        "siteId": "56",
+        "status": "1"
+    }, {
+        "column": "12",
+        "name": "4列11行",
+        "row": "4",
+        "rowName": "4",
+        "siteId": "57",
+        "status": "1"
+    }, {
+        "column": "13",
+        "name": "4列12行",
+        "row": "4",
+        "rowName": "4",
+        "siteId": "58",
+        "status": "1"
+    }, {
+        "column": "14",
+        "name": "4列13行",
+        "row": "4",
+        "rowName": "4",
+        "siteId": "59",
+        "status": "1"
+    }, {
+        "column": "1",
+        "name": "5列1行",
+        "row": "5",
+        "rowName": "5",
+        "siteId": "60",
+        "status": "1"
+    }, {
+        "column": "3",
+        "name": "5列2行",
+        "row": "5",
+        "rowName": "5",
+        "siteId": "61",
+        "status": "1"
+    }, {
+        "column": "4",
+        "name": "5列3行",
+        "row": "5",
+        "rowName": "5",
+        "siteId": "62",
+        "status": "1"
+    }, {
+        "column": "5",
+        "name": "5列4行",
+        "row": "5",
+        "rowName": "5",
+        "siteId": "63",
+        "status": "1"
+    }, {
+        "column": "6",
+        "name": "5列5行",
+        "row": "5",
+        "rowName": "5",
+        "siteId": "64",
+        "status": "1"
+    }, {
+        "column": "7",
+        "name": "5列6行",
+        "row": "5",
+        "rowName": "5",
+        "siteId": "65",
+        "status": "1"
+    }, {
+        "column": "8",
+        "name": "5列7行",
+        "row": "5",
+        "rowName": "5",
+        "siteId": "66",
+        "status": "1"
+    }, {
+        "column": "10",
+        "name": "5列8行",
+        "row": "5",
+        "rowName": "5",
+        "siteId": "67",
+        "status": "1"
+    }, {
+        "column": "11",
+        "name": "5列9行",
+        "row": "5",
+        "rowName": "5",
+        "siteId": "68",
+        "status": "1"
+    }, {
+        "column": "12",
+        "name": "5列10行",
+        "row": "5",
+        "rowName": "5",
+        "siteId": "69",
+        "status": "1"
+    }]
+}
+  new YardMap({
+    data
+  });
+</script>
+</body>
+</html>

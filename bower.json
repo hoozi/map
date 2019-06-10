@@ -1,0 +1,22 @@
+{
+  "name": "yardmap",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "AngryPanda <287036406@qq.com>"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.4.1",
+    "lodash": "^4.17.11",
+    "hammerjs": "hammer#^2.0.8"
+  }
+}
