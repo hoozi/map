@@ -75,10 +75,48 @@
       display: inline-block;
       flex: none
     }
+
+    .radar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-color: rgba(0,0,0,.6);
+      padding: 4px;
+      overflow: hidden;
+      transition: opacity .5s ease-in;
+      opacity: 0;
+      visibility: hidden;
+      z-index: 20;
+    }
+    .radar.active {
+      opacity: 1;
+      visibility: visible;
+      z-index: 22
+    }
+    .radar-content {
+      position: relative;
+    }
+    .radar-frame {
+      border: 1px solid #eb002a;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 1
+    }
   </style>
 </head>
 <body>
 <div class="container">
+  <div class="radar">
+    <div class="radar-content">
+      <canvas class="canvas-radar">
+        您的浏览器不支持canvas,请使用chrome等现代浏览器！
+      </canvas>
+      <div class="radar-frame"></div>
+    </div>
+  </div>
   <div class="y-index index"></div>
   <div class="x-index index"></div>
   <canvas class="canvas-map">
@@ -561,9 +599,13 @@
         "status": "1"
     }]
 }
-  new YardMap({
-    data
-  });
+ new YardMap({
+  data,
+  radar: false,
+  onSelected(selectedSites, action){
+    //alert(JSON.stringify(selectedSites), action)
+  }
+});
 </script>
 </body>
 </html>
