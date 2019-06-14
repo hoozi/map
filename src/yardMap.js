@@ -312,11 +312,9 @@ class YardMap {
         dy: this.dy + Math.round(centerY - scaleCenterY)
       });
       this.checkBoundary();
-      this.renderMap(this.mapCtx);
-      this.updateRadar();
+      this.updateMap();
     }
     this.showRadar();
-    this.updateIndex();
     if(tapedSite) {
       this.selectSeats(tapedSite);
     }
